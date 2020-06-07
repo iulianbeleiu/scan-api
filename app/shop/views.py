@@ -7,7 +7,9 @@ from .models import Shop
 from .serializer import ShopSerializer
 
 
-class ShopViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+class ShopViewSet(viewsets.GenericViewSet,
+                  mixins.ListModelMixin,
+                  mixins.CreateModelMixin):
     """ViewSet for Shop"""
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -17,3 +19,7 @@ class ShopViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     def get_queryset(self):
         """Custom queryset for authenticated user"""
         return self.queryset.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        """Create a Shop"""
+        return serializer.save(user=self.request.user)

@@ -61,3 +61,21 @@ class PublicShopTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data[0]['name'], shop.name)
+
+    def test_create_shop_successful(self):
+        """Test creating a Shop is successful"""
+        payload = {'name': 'ABC Corner'}
+        self.client.post(SHOP_URL, payload)
+
+        exists = Shop.objects.filter(
+            user=self.user, name=payload['name']
+        ).exists()
+
+        self.assertTrue(exists)
+
+    def test_create_shop_invalid(self):
+        """Test creating a shop with invalid payload"""
+        payload = {'name': ''}
+        res = self.client.post(SHOP_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
