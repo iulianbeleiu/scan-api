@@ -17,6 +17,10 @@ def detail_url(product_id):
     return reverse('shop:product-detail', args=[product_id])
 
 
+def shop_product_barcode_url(barcode):
+    return reverse('shop:product-barcode', args=[barcode])
+
+
 class PrivateProductTests(TestCase):
     """Test that Product API is not publicly available"""
 
@@ -140,3 +144,29 @@ class PublicProductTests(TestCase):
         serializer = ProductSerializer(product)
 
         self.assertEqual(res.data, serializer.data)
+
+    def test_get_shop_product_by_barcode(self):
+        """Test get a shop product by barcode"""
+        product1 = Product.objects.create(
+            user=self.user,
+            name='Product name 1',
+            description='Product description 1',
+            quantity=5,
+            price=10,
+            barcode='1239832798432',
+        )
+
+        Product.objects.create(
+            user=self.user,
+            name='Product name 2',
+            description='Product description 2',
+            quantity=100,
+            price=5,
+            barcode='54352345234',
+        )
+
+        res = self.client.get(shop_product_barcode_url(product1.barcode))
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        serializer = ProductSerializer(res.data)
+        self.assertEqual(product1.name, serializer.data['name'])

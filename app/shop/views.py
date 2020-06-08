@@ -1,6 +1,10 @@
+from rest_framework.decorators import action
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from django.shortcuts import get_object_or_404
 
 from .models import Shop, Product
 
@@ -39,3 +43,16 @@ class ProductViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Create a Product"""
         return serializer.save(user=self.request.user)
+
+    @action(methods=['GET'], detail=False,
+            url_path='barcode/(?P<barcode>[^/.]+)')
+    def barcode(self, request, barcode=None):
+        """Get a shop product by product barcode"""
+
+        product = get_object_or_404(Product, barcode=barcode)
+        serializer = ProductSerializer(product)
+
+        return Response(
+            serializer.data,
+            status=200
+        )
