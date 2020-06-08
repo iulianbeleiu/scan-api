@@ -20,7 +20,7 @@ class Product(models.Model):
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2)
     barcode = models.CharField(max_length=255)
-    is_active = models.BooleanField()
+    is_active = models.BooleanField(default=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
