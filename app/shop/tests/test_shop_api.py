@@ -102,7 +102,7 @@ class PublicShopTests(TestCase):
             description='Product description 1',
             quantity=5,
             price=10,
-            barcode='1239832798432',
+            barcode='98769868768',
         )
 
         product2 = Product.objects.create(
