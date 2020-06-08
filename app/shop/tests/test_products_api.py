@@ -1,3 +1,8 @@
+import tempfile
+import os
+
+from PIL import Image
+
 from django.urls import reverse
 from django.test import TestCase
 from django.contrib.auth import get_user_model
@@ -19,6 +24,11 @@ def detail_url(product_id):
 
 def shop_product_barcode_url(barcode):
     return reverse('shop:product-barcode', args=[barcode])
+
+
+def image_upload_url(product_id):
+    """Return url for product image upload"""
+    return reverse('shop:product-upload-image', args=[product_id])
 
 
 class PrivateProductTests(TestCase):
@@ -170,3 +180,46 @@ class PublicProductTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         serializer = ProductSerializer(res.data)
         self.assertEqual(product1.name, serializer.data['name'])
+
+
+class ProductImageUploadTests(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            'test@test.com',
+            '123sfa'
+        )
+        self.client.force_authenticate(self.user)
+        self.product = Product.objects.create(
+            user=self.user,
+            name='Product name x',
+            description='Product description x',
+            quantity=100,
+            price=5,
+            barcode='54352345234',
+        )
+
+    def tearDown(self):
+        self.product.image.delete()
+
+    def test_upload_image_to_product(self):
+        """Test uploading an image to product"""
+        url = image_upload_url(self.product.id)
+        with tempfile.NamedTemporaryFile(suffix='.jpg') as ntf:
+            img = Image.new('RGB', (10, 10))
+            img.save(ntf, format='JPEG')
+            ntf.seek(0)
+            res = self.client.post(url, {'image': ntf}, format='multipart')
+
+        self.product.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('image', res.data)
+        self.assertTrue(os.path.exists(self.product.image.path))
+
+    def test_upload_image_bad_request(self):
+        """Test uploading an invalid image"""
+        url = image_upload_url(self.product.id)
+        res = self.client.post(url, {'image': 'notimage'}, format='multipart')
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
