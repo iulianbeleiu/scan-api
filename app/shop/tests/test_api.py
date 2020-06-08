@@ -12,6 +12,11 @@ from shop.serializer import ShopSerializer
 SHOP_URL = reverse('shop:shop-list')
 
 
+def detail_url(shop_id):
+    """Return Shop detail URL"""
+    return reverse('shop:shop-detail', args=[shop_id])
+
+
 class PrivateShopTests(TestCase):
     """Test that Shop API is not publicly available"""
 
@@ -79,3 +84,12 @@ class PublicShopTests(TestCase):
         res = self.client.post(SHOP_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_view_shop_detail(self):
+        """Test viewing shop detail"""
+        shop = Shop.objects.create(user=self.user, name='ABC Corner')
+
+        res = self.client.get(detail_url(shop.id))
+        serializer = ShopSerializer(shop)
+
+        self.assertEqual(res.data, serializer.data)
