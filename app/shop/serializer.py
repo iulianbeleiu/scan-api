@@ -15,3 +15,13 @@ class ShopSerializer(serializers.ModelSerializer):
         model = Shop
         fields = ('id', 'name', 'is_active', 'products')
         read_only_fields = ('id',)
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    """Serializer for product objects"""
+
+    class Meta:
+        model = Product
+        fields = ('id', 'name', 'description', 'quantity', 'price',
+                  'barcode', 'is_active', 'updated_at', 'created_at')
+        read_only_fields = ('id',)
