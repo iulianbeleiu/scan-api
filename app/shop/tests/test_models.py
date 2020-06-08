@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from shop.models import Shop
+from shop.models import Shop, Product
 
 
 def sample_user():
@@ -14,7 +14,7 @@ def sample_user():
 class ModelTests(TestCase):
 
     def test_create_shop(self):
-        """Test creating a shop"""
+        """Test the shop string representation"""
         shop = Shop.objects.create(
             user=sample_user(),
             name='ABC Iulian',
@@ -22,3 +22,17 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(shop), shop.name)
+
+    def test_create_product(self):
+        """Test the product string representation"""
+        product = Product.objects.create(
+            user=sample_user(),
+            name='Product name',
+            description='Product description',
+            quantity=5,
+            price=10,
+            barcode='1239832798432',
+            is_active=True
+        )
+
+        self.assertEqual(str(product), product.name)
