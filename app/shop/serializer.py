@@ -23,5 +23,14 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('id', 'name', 'description', 'quantity', 'price',
-                  'barcode', 'is_active', 'updated_at', 'created_at')
+                  'barcode', 'is_active', 'image', 'updated_at', 'created_at')
+        read_only_fields = ('id',)
+
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    """Serializer for uploading images to products"""
+
+    class Meta:
+        model = Product
+        fields = ('id', 'image')
         read_only_fields = ('id',)
