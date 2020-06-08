@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from shop.models import Shop
+from shop.models import Shop, Product
 from shop.serializer import ShopSerializer
 
 
@@ -93,3 +93,39 @@ class PublicShopTests(TestCase):
         serializer = ShopSerializer(shop)
 
         self.assertEqual(res.data, serializer.data)
+
+    def test_create_shop_with_products(self):
+        """Test creating a shop with products"""
+        product1 = Product.objects.create(
+            user=self.user,
+            name='Product name 1',
+            description='Product description 1',
+            quantity=5,
+            price=10,
+            barcode='1239832798432',
+        )
+
+        product2 = Product.objects.create(
+            user=self.user,
+            name='Product name 2',
+            description='Product description 2',
+            quantity=100,
+            price=5,
+            barcode='1239832798432',
+        )
+
+        payload = {
+            'name': 'ABC Corner',
+            'products': [product1.id, product2.id]
+        }
+
+        res = self.client.post(SHOP_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        shop = Shop.objects.get(id=res.data['id'])
+        products = shop.products.all()
+
+        self.assertEqual(len(products), 2)
+        self.assertIn(product1, products)
+        self.assertIn(product2, products)
