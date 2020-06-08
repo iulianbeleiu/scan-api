@@ -54,7 +54,7 @@ class PublicProductTests(TestCase):
             description='Product description 1',
             quantity=5,
             price=10,
-            barcode='1239832798432',
+            barcode='3532452342',
         )
         Product.objects.create(
             user=self.user,
