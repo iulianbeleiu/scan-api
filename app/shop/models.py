@@ -30,7 +30,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     quantity = models.IntegerField()
-    price = models.DecimalField(max_digits=5, decimal_places=2)
+    price = models.FloatField()
     barcode = models.CharField(max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
     user = models.ForeignKey(
