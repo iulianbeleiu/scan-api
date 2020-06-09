@@ -1,5 +1,7 @@
+import decimal
+
 from rest_framework.decorators import action
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -9,7 +11,7 @@ from django.shortcuts import get_object_or_404
 from .models import Shop, Product
 
 from .serializer import ShopSerializer, ProductSerializer, \
-                            ProductImageSerializer
+                            ProductImageSerializer, CartSerializer
 
 
 class ShopViewSet(viewsets.ModelViewSet):
@@ -84,3 +86,45 @@ class ProductViewSet(viewsets.ModelViewSet):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class CartView(generics.RetrieveUpdateAPIView):
+    """ViewSet for Cart"""
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CartSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        """Get cart from session"""
+        if request.session.get('cart', False):
+            return Response(request.session['cart'], status=status.HTTP_200_OK)
+
+        return Response([])
+
+    def update(self, request, *args, **kwargs):
+        """Update or Create cart in session"""
+        serializer = CartSerializer(data=self.request.data)
+        serializer.is_valid()
+        validated_data = serializer.validated_data
+
+        product = validated_data['product']
+        quantity = validated_data['quantity']
+        total = product.price * quantity
+        # del self.request.session['cart']
+        if 'cart' in self.request.session:
+            cart = self.request.session['cart']
+            cart['products'].append(product.id)
+            cart['total'] = str(decimal.Decimal(cart['total'])
+                                + decimal.Decimal(total))
+            self.request.session['cart'] = cart
+        else:
+            cart = {
+                'total': str(total),
+                'products': [product.id]
+            }
+            self.request.session['cart'] = cart
+        return Response(cart, status=status.HTTP_200_OK)
+
+    def get_queryset(self):
+        return self.queryset

@@ -34,3 +34,11 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = Product
         fields = ('id', 'image')
         read_only_fields = ('id',)
+
+
+class CartSerializer(serializers.Serializer):
+    """Serializer for cart objects"""
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all()
+    )
+    quantity = serializers.IntegerField()
