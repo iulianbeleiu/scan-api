@@ -38,7 +38,8 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.Serializer):
     """Serializer for cart objects"""
-    product = serializers.PrimaryKeyRelatedField(
+    products = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all()
     )
     quantity = serializers.IntegerField()
+    total = serializers.FloatField(required=False)

@@ -1,5 +1,3 @@
-import decimal
-
 from rest_framework.decorators import action
 from rest_framework import viewsets, status, generics
 from rest_framework.authentication import TokenAuthentication
@@ -105,26 +103,36 @@ class CartView(generics.RetrieveUpdateAPIView):
     def update(self, request, *args, **kwargs):
         """Update or Create cart in session"""
         serializer = CartSerializer(data=self.request.data)
-        serializer.is_valid()
-        validated_data = serializer.validated_data
+        if serializer.is_valid():
+            try:
+                data = serializer.validated_data
 
-        product = validated_data['product']
-        quantity = validated_data['quantity']
-        total = product.price * quantity
-        # del self.request.session['cart']
-        if 'cart' in self.request.session:
-            cart = self.request.session['cart']
-            cart['products'].append(product.id)
-            cart['total'] = str(decimal.Decimal(cart['total'])
-                                + decimal.Decimal(total))
-            self.request.session['cart'] = cart
+                product = data['products']
+                quantity = data['quantity']
+                if quantity > product.quantity:
+                    message = {
+                        "quantity": [
+                            "Quantity too high."
+                        ]
+                    }
+                    return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+                total = product.price * quantity
+
+                if 'cart' in self.request.session:
+                    cart = self.request.session['cart']
+                    cart['products'].append(product.id)
+                    cart['total'] += total
+                    self.request.session['cart'] = cart
+                else:
+                    cart = {
+                        'total': total,
+                        'products': [product.id]
+                    }
+                    self.request.session['cart'] = cart
+                return Response(cart, status=status.HTTP_200_OK)
+            except Exception:
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
-            cart = {
-                'total': str(total),
-                'products': [product.id]
-            }
-            self.request.session['cart'] = cart
-        return Response(cart, status=status.HTTP_200_OK)
-
-    def get_queryset(self):
-        return self.queryset
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
