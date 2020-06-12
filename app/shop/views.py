@@ -115,7 +115,8 @@ class CartView(generics.RetrieveUpdateAPIView):
                             "Quantity too high."
                         ]
                     }
-                    return Response(message, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(message,
+                                    status=status.HTTP_400_BAD_REQUEST)
 
                 total = product.price * quantity
 
