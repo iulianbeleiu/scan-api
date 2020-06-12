@@ -10,6 +10,8 @@ class CartItem(models.Model):
     name = models.CharField(max_length=255)
     price = models.FloatField()
     quantity = models.IntegerField()
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
 
     @property
     def total(self):
@@ -17,3 +19,14 @@ class CartItem(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    items = models.ManyToManyField(CartItem)
+    total = models.FloatField()
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
