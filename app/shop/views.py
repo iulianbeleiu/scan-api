@@ -1,6 +1,7 @@
 from rest_framework.decorators import action
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 from django.shortcuts import get_object_or_404
 
@@ -21,7 +22,9 @@ class ProductViewSet(viewsets.ModelViewSet):
     """ViewSet for Product"""
 
     serializer_class = ProductSerializer
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().order_by('-created_at')
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 10
 
     def get_serializer_class(self):
         """Return appropriate serializer class"""
