@@ -4,4 +4,5 @@ flake8>=3.8.2,<3.9.0
 psycopg2>=2.8.5,<2.9.0
 Pillow>=7.1.2,<7.20.
 django-cors-headers>=3.3.0,<3.4.0
-coverage>=5.1,<6.0
+coverage>=5.1,<6.0.0
+xhtml2pdf>=0.2.4,<1.0.0

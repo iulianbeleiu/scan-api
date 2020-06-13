@@ -13,6 +13,11 @@ CART_URL = reverse('cart:cart-list')
 CART_ITEMS_URL = reverse('cart:cartitem-list')
 
 
+def receipt_pdf_url(cart_id):
+    """Return url for receipt pdf"""
+    return reverse('cart:cart-receipt', args=[cart_id])
+
+
 class PrivateCartTests(TestCase):
     """Test that Cart API is not publicly available"""
 
@@ -22,6 +27,12 @@ class PrivateCartTests(TestCase):
     def test_login_required_retrieving_cart(self):
         """Test that login is required"""
         res = self.client.get(CART_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_login_required_receipt_pdf(self):
+        """Test that login is required when generating receipt"""
+        res = self.client.get(receipt_pdf_url(0))
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -122,3 +133,34 @@ class PublicCartTests(TestCase):
 
         res = self.client.post(CART_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_receipt_file_download(self):
+        """Test that pdf is attached to response"""
+        cart_item_payload = {
+            'name': "Sample cart item pdf",
+            'price': 5,
+            'quantity': 2,
+        }
+
+        res_items = self.client.post(CART_ITEMS_URL, cart_item_payload)
+        payload = {
+            'total': 14,
+            'items': [res_items.data['id']]
+        }
+        res = self.client.post(CART_URL, payload)
+
+        pdf_url = receipt_pdf_url(res.data['id'])
+        pdf_file_name = f'receipt-{str(res.data["id"])}.pdf'
+        pdf_res = self.client.get(pdf_url)
+
+        self.assertEqual(pdf_res.status_code, status.HTTP_200_OK)
+        self.assertEqual(pdf_res.get('Content-Disposition'),
+                         f'attachment; filename="{pdf_file_name}"')
+
+    def test_receipt_file_invalid(self):
+        """Test that pdf is not generated when cart is not found"""
+
+        pdf_url = receipt_pdf_url(0)
+        res = self.client.get(pdf_url)
+
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
