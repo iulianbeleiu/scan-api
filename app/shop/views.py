@@ -32,8 +32,6 @@ class ShopViewSet(viewsets.ModelViewSet):
 class ProductViewSet(viewsets.ModelViewSet):
     """ViewSet for Product"""
 
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
 
@@ -43,14 +41,6 @@ class ProductViewSet(viewsets.ModelViewSet):
             return ProductImageSerializer
 
         return self.serializer_class
-
-    def get_queryset(self):
-        """Custom queryset for authenticated user"""
-        return self.queryset.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        """Create a Product"""
-        return serializer.save(user=self.request.user)
 
     @action(methods=['GET'], detail=False,
             url_path='barcode/(?P<barcode>[^/.]+)')

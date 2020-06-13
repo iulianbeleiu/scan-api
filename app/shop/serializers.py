@@ -20,9 +20,11 @@ class ShopSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     """Serializer for product objects"""
 
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Product
-        fields = ('id', 'name', 'description', 'quantity', 'price',
+        fields = ('id', 'user', 'name', 'description', 'quantity', 'price',
                   'barcode', 'is_active', 'image', 'updated_at', 'created_at')
         read_only_fields = ('id',)
 

@@ -31,21 +31,8 @@ def image_upload_url(product_id):
     return reverse('shop:product-upload-image', args=[product_id])
 
 
-class PrivateProductTests(TestCase):
-    """Test that Product API is not publicly available"""
-
-    def setUp(self):
-        self.client = APIClient()
-
-    def test_login_required(self):
-        """Test that login is required when accessing the Shop API"""
-        res = self.client.get(PRODUCT_URL)
-
-        self.assertTrue(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
-
-class PublicProductTests(TestCase):
-    """Test that authenticated user can access the Product API"""
+class ProductTests(TestCase):
+    """Test Product API"""
 
     def setUp(self):
         self.user = get_user_model().objects.create_user(
@@ -81,34 +68,6 @@ class PublicProductTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-    def test_products_limited_to_user(self):
-        """Test that returned products are for authenticated user only"""
-        product = Product.objects.create(
-            user=self.user,
-            name='Product name 1',
-            description='Product description 1',
-            quantity=5,
-            price=10,
-            barcode='1239832798432',
-        )
-        Product.objects.create(
-            user=get_user_model().objects.create_user(
-                email='test2@test.com',
-                password='test123'
-            ),
-            name='Product name x',
-            description='Product description x',
-            quantity=24,
-            price=123,
-            barcode='231543153432',
-        )
-
-        res = self.client.get(PRODUCT_URL)
-
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]['name'], product.name)
-
     def test_create_product_successful(self):
         """Test creating a product is successful"""
         payload = {
@@ -121,7 +80,7 @@ class PublicProductTests(TestCase):
         self.client.post(PRODUCT_URL, payload)
 
         exists = Product.objects.filter(
-            user=self.user, name=payload['name']
+            name=payload['name']
         ).exists()
 
         self.assertTrue(exists)
