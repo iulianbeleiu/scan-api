@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 
 from .models import CartItem, Cart
 
@@ -12,10 +13,13 @@ class CartItemViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 10
 
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
-        queryset = self.queryset.filter(user=self.request.user)
+        queryset = self.queryset.filter(user=self.request.user)\
+            .order_by('updated_at')
         cart_items = []
         if self.request.session.get('cart_items'):
             cart_items = self.request.session['cart_items']
