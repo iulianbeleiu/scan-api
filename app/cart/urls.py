@@ -1,11 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import CartItemViewSet
+from .views import CartItemViewSet, CartViewSet
 
 
 router = DefaultRouter()
-router.register('cartitems', CartItemViewSet)
+router.register('items', CartItemViewSet)
+router.register('cart', CartViewSet)
 
 app_name = 'cart'
 

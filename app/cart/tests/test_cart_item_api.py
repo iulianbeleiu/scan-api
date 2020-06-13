@@ -47,7 +47,7 @@ class PublicCartItemsTests(TestCase):
     """Test the authorized CartItems API"""
 
     def setUp(self):
-        self.user = get_user_model().objects.create(
+        self.user = get_user_model().objects.create_user(
             email='sample@test.com',
             password='sample123',
         )

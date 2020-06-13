@@ -2,9 +2,9 @@ from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from .models import CartItem
+from .models import CartItem, Cart
 
-from .serializers import CartItemSerializer
+from .serializers import CartItemSerializer, CartSerializer
 
 
 class CartItemViewSet(viewsets.ModelViewSet):
@@ -30,3 +30,14 @@ class CartItemViewSet(viewsets.ModelViewSet):
             self.request.session['cart_items'] = cart_items
         else:
             self.request.session['cart_items'] = [cart_item.id]
+
+
+class CartViewSet(viewsets.ModelViewSet):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+
+    def get_queryset(self):
+        """Return object for the current authenticated user only"""
+        return self.queryset.filter(user=self.request.user)
