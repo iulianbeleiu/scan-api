@@ -5,7 +5,7 @@ from .views import CartItemViewSet, CartViewSet
 
 
 router = DefaultRouter()
-router.register('items', CartItemViewSet)
+router.register('cart-items', CartItemViewSet)
 router.register('cart', CartViewSet)
 
 app_name = 'cart'

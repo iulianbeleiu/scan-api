@@ -5,30 +5,12 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from cart.models import Cart, CartItem
+from cart.models import Cart
 from cart.serializers import CartSerializer
 
 
 CART_URL = reverse('cart:cart-list')
 CART_ITEMS_URL = reverse('cart:cartitem-list')
-
-
-def sample_user():
-    """Create sample user"""
-    return get_user_model().objects.create(
-        email='test@test.com',
-        password='test123'
-    )
-
-
-def sample_cart_item(user):
-    """Create sample cart item"""
-    return CartItem.objects.create(
-        user=user,
-        name="Sample cart item",
-        price=2,
-        quantity=10,
-    )
 
 
 class PrivateCartTests(TestCase):

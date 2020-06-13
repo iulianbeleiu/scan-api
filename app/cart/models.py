@@ -28,5 +28,6 @@ class Cart(models.Model):
     )
     items = models.ManyToManyField(CartItem)
     total = models.FloatField()
+    completed = models.BooleanField(default=True)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
