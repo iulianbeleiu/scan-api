@@ -63,10 +63,10 @@ class ProductTests(TestCase):
         )
 
         res = self.client.get(PRODUCT_URL)
-        serializer = ProductSerializer(res.data, many=True)
+        serializer = ProductSerializer(res.data['results'], many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.data['results'], serializer.data)
 
     def test_create_product_successful(self):
         """Test creating a product is successful"""
