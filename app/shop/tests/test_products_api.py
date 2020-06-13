@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from shop.models import Product
-from shop.serializer import ProductSerializer
+from shop.serializers import ProductSerializer
 
 
 PRODUCT_URL = reverse('shop:product-list')
