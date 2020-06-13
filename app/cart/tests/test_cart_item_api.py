@@ -59,9 +59,9 @@ class PublicCartItemsTests(TestCase):
         sample_cart_item(self.user)
 
         res = self.client.get(CART_ITEMS_URL)
-        serializer = CartItemSerializer(res.data, many=True)
+        serializer = CartItemSerializer(res.data['results'], many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.data['results'], serializer.data)
 
     def test_cart_items_limited_to_user(self):
         """Test that returned cart items are for authenticated user"""
@@ -80,7 +80,7 @@ class PublicCartItemsTests(TestCase):
         res = self.client.get(CART_ITEMS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 0)
+        self.assertEqual(len(res.data['results']), 0)
 
     def test_create_cart_items_successful(self):
         """Test creating a cart item"""
