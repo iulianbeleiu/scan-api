@@ -1,7 +1,5 @@
 from rest_framework.decorators import action
 from rest_framework import viewsets, status
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from django.shortcuts import get_object_or_404
@@ -15,18 +13,8 @@ from .serializers import ShopSerializer, ProductSerializer, \
 class ShopViewSet(viewsets.ModelViewSet):
     """ViewSet for Shop"""
 
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
     serializer_class = ShopSerializer
     queryset = Shop.objects.all()
-
-    def get_queryset(self):
-        """Custom queryset for authenticated user"""
-        return self.queryset.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        """Create a Shop"""
-        return serializer.save(user=self.request.user)
 
 
 class ProductViewSet(viewsets.ModelViewSet):
