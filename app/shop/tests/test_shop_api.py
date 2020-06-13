@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from shop.models import Shop, Product
-from shop.serializer import ShopSerializer
+from shop.serializers import ShopSerializer
 
 
 SHOP_URL = reverse('shop:shop-list')

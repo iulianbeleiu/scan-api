@@ -1,5 +1,5 @@
 from rest_framework.decorators import action
-from rest_framework import viewsets, status, generics
+from rest_framework import viewsets, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,8 +8,8 @@ from django.shortcuts import get_object_or_404
 
 from .models import Shop, Product
 
-from .serializer import ShopSerializer, ProductSerializer, \
-                            ProductImageSerializer, CartSerializer
+from .serializers import ShopSerializer, ProductSerializer, \
+                            ProductImageSerializer
 
 
 class ShopViewSet(viewsets.ModelViewSet):
@@ -84,56 +84,3 @@ class ProductViewSet(viewsets.ModelViewSet):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
-
-
-class CartView(generics.RetrieveUpdateAPIView):
-    """ViewSet for Cart"""
-
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
-    serializer_class = CartSerializer
-
-    def retrieve(self, request, *args, **kwargs):
-        """Get cart from session"""
-        if request.session.get('cart', False):
-            return Response(request.session['cart'], status=status.HTTP_200_OK)
-
-        return Response([])
-
-    def update(self, request, *args, **kwargs):
-        """Update or Create cart in session"""
-        serializer = CartSerializer(data=self.request.data)
-        if serializer.is_valid():
-            try:
-                data = serializer.validated_data
-
-                product = data['products']
-                quantity = data['quantity']
-                if quantity > product.quantity:
-                    message = {
-                        "quantity": [
-                            "Quantity too high."
-                        ]
-                    }
-                    return Response(message,
-                                    status=status.HTTP_400_BAD_REQUEST)
-
-                total = product.price * quantity
-
-                if 'cart' in self.request.session:
-                    cart = self.request.session['cart']
-                    cart['products'].append(product.id)
-                    cart['total'] += total
-                    self.request.session['cart'] = cart
-                else:
-                    cart = {
-                        'total': total,
-                        'products': [product.id]
-                    }
-                    self.request.session['cart'] = cart
-                return Response(cart, status=status.HTTP_200_OK)
-            except Exception:
-                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)

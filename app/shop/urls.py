@@ -2,7 +2,7 @@ from django.urls import path, include
 
 from rest_framework.routers import DefaultRouter
 
-from .views import ShopViewSet, ProductViewSet, CartView
+from .views import ShopViewSet, ProductViewSet
 
 
 router = DefaultRouter()
@@ -13,5 +13,4 @@ app_name = 'shop'
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('cart/', CartView.as_view(), name='cart')
 ]
