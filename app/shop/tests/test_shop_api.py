@@ -17,21 +17,8 @@ def detail_url(shop_id):
     return reverse('shop:shop-detail', args=[shop_id])
 
 
-class PrivateShopTests(TestCase):
-    """Test that Shop API is not publicly available"""
-
-    def setUp(self):
-        self.client = APIClient()
-
-    def test_login_required(self):
-        """Test that login is required when accessing the Shop API"""
-        res = self.client.get(SHOP_URL)
-
-        self.assertTrue(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
-
-class PublicShopTests(TestCase):
-    """Test that authenticated user can access the Shop API"""
+class ShopTests(TestCase):
+    """Test Shop API"""
 
     def setUp(self):
         self.user = get_user_model().objects.create_user(
@@ -52,20 +39,6 @@ class PublicShopTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
-
-    def test_shops_limited_to_user(self):
-        """Test that returned shops are for authenticated user only"""
-        shop = Shop.objects.create(user=self.user, name='ABC Corner')
-        Shop.objects.create(user=get_user_model().objects.create_user(
-            email='test2@test.com',
-            password='test123'
-        ), name='Non-stop')
-
-        res = self.client.get(SHOP_URL)
-
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]['name'], shop.name)
 
     def test_create_shop_successful(self):
         """Test creating a Shop is successful"""
