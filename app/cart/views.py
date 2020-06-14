@@ -67,3 +67,7 @@ class CartViewSet(viewsets.ModelViewSet):
         pisa.CreatePDF(html, dest=response)
 
         return response
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+        del self.request.session['cart_items']
