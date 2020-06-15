@@ -1,4 +1,4 @@
-# django-base-api
+# Django Scan API
 
 #### Create a new project
 ```
