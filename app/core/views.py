@@ -27,3 +27,8 @@ def api_root(request, format=None):
         'cart-items': reverse('cart:cartitem-list',
                               request=request, format=format),
     })
+
+
+@api_view(['GET'])
+def ping(request, format=None):
+    return Response('Ok')
