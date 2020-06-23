@@ -42,3 +42,15 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = Product
         fields = ('id', 'image')
         read_only_fields = ('id',)
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    """Serializer for Address object"""
+
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Address
+        fields = ('id', 'user', 'country', 'postcode',
+                  'region', 'city', 'street', 'number')
+        read_only_fields = ('id',)

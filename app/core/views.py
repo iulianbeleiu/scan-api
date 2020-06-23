@@ -20,6 +20,8 @@ def api_root(request, format=None):
                            request=request, format=format),
         'shops': reverse('shop:shop-list',
                          request=request, format=format),
+        'address': reverse('shop:address-list',
+                           request=request, format=format),
         'products': reverse('shop:product-list',
                             request=request, format=format),
         'cart': reverse('cart:cart-list',

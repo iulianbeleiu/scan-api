@@ -5,10 +5,10 @@ from rest_framework.pagination import PageNumberPagination
 
 from django.shortcuts import get_object_or_404
 
-from .models import Shop, Product
+from .models import Shop, Product, Address
 
 from .serializers import ShopSerializer, ProductSerializer, \
-                            ProductImageSerializer
+                            ProductImageSerializer, AddressSerializer
 
 
 class ShopViewSet(viewsets.ModelViewSet):
@@ -65,3 +65,10 @@ class ProductViewSet(viewsets.ModelViewSet):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class AddressViewSet(viewsets.ModelViewSet):
+    """ViewSet for Shop"""
+
+    serializer_class = AddressSerializer
+    queryset = Address.objects.all()
