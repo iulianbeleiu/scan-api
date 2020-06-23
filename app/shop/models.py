@@ -14,6 +14,9 @@ def product_image_file_path(instance, filename):
 
 
 class Shop(models.Model):
+    class Meta:
+        verbose_name_plural = "Shop"
+
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     user = models.ForeignKey(
@@ -28,6 +31,9 @@ class Shop(models.Model):
 
 
 class Product(models.Model):
+    class Meta:
+        verbose_name_plural = "Shop Products"
+
     name = models.CharField(max_length=255)
     description = models.TextField()
     quantity = models.IntegerField()
@@ -47,6 +53,9 @@ class Product(models.Model):
 
 
 class Address(models.Model):
+    class Meta:
+        verbose_name_plural = "Shop Address"
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
