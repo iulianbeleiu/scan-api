@@ -24,22 +24,12 @@ class CartItemViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
-        queryset = self.queryset.filter(user=self.request.user)\
+        return self.queryset.filter(user=self.request.user, cart=None)\
             .order_by('updated_at')
-        cart_items = []
-        if self.request.session.get('cart_items'):
-            cart_items = self.request.session['cart_items']
-        return queryset.filter(user=self.request.user, pk__in=cart_items)
 
     def perform_create(self, serializer):
         """Create a new object for current user"""
-        cart_item = serializer.save(user=self.request.user)
-        if self.request.session.get('cart_items'):
-            cart_items = self.request.session['cart_items']
-            cart_items.append(cart_item.id)
-            self.request.session['cart_items'] = cart_items
-        else:
-            self.request.session['cart_items'] = [cart_item.id]
+        serializer.save(user=self.request.user)
 
 
 class CartViewSet(viewsets.ModelViewSet):
@@ -70,4 +60,3 @@ class CartViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-        del self.request.session['cart_items']

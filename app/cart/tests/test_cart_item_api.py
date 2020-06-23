@@ -59,7 +59,10 @@ class PublicCartItemsTests(TestCase):
         sample_cart_item(self.user)
 
         res = self.client.get(CART_ITEMS_URL)
-        serializer = CartItemSerializer(res.data['results'], many=True)
+
+        cart_items = CartItem.objects.all().order_by('updated_at')
+        serializer = CartItemSerializer(cart_items, many=True)
+
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['results'], serializer.data)
 
@@ -80,7 +83,7 @@ class PublicCartItemsTests(TestCase):
         res = self.client.get(CART_ITEMS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data['results']), 0)
+        self.assertEqual(len(res.data['results']), 1)
 
     def test_create_cart_items_successful(self):
         """Test creating a cart item"""
