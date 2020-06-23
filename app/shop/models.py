@@ -21,6 +21,7 @@ class Shop(models.Model):
         on_delete=models.CASCADE
     )
     products = models.ManyToManyField('Product')
+    address = models.ManyToManyField('Address')
 
     def __str__(self):
         return self.name
@@ -43,3 +44,20 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Address(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    country = models.CharField(max_length=255)
+    postcode = models.IntegerField()
+    region = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    street = models.CharField(max_length=255)
+    number = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.city
