@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Shop, Product
+from .models import Shop, Product, Address
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -12,9 +12,14 @@ class ShopSerializer(serializers.ModelSerializer):
         queryset=Product.objects.all()
     )
 
+    address = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Address.objects.all()
+    )
+
     class Meta:
         model = Shop
-        fields = ('id', 'user', 'name', 'is_active', 'products')
+        fields = ('id', 'user', 'name', 'is_active', 'products', 'address')
         read_only_fields = ('id',)
 
 

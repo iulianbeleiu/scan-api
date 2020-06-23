@@ -3,7 +3,7 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from shop.models import Shop, Product, product_image_file_path
+from shop.models import Shop, Product, product_image_file_path, Address
 
 
 def sample_user():
@@ -17,11 +17,25 @@ class ModelTests(TestCase):
 
     def test_create_shop(self):
         """Test the shop string representation"""
+        address = Address.objects.create(
+            user=get_user_model().objects.create_user(
+                email='test@email.com',
+                password='bestpass'
+            ),
+            country="Romania",
+            postcode=574479,
+            region="Timis",
+            city="Timisoara",
+            street="Gheorghe Lazar",
+            number="24 A"
+        )
+
         shop = Shop.objects.create(
             user=sample_user(),
             name='ABC Iulian',
             is_active=True,
         )
+        shop.address.add(address)
 
         self.assertEqual(str(shop), shop.name)
 
@@ -48,3 +62,17 @@ class ModelTests(TestCase):
 
         exp_path = f'uploads/product/{uuid}.jpg'
         self.assertEqual(file_path, exp_path)
+
+    def test_create_address(self):
+        """Test the address string representation"""
+        address = Address.objects.create(
+            user=sample_user(),
+            country="Romania",
+            postcode=574479,
+            region="Timis",
+            city="Timisoara",
+            street="Gheorghe Lazar",
+            number="24 A"
+        )
+
+        self.assertEqual(str(address), address.city)

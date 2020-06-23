@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from shop.models import Shop, Product
+from shop.models import Shop, Product, Address
 from shop.serializers import ShopSerializer
 
 
@@ -15,6 +15,21 @@ SHOP_URL = reverse('shop:shop-list')
 def detail_url(shop_id):
     """Return Shop detail URL"""
     return reverse('shop:shop-detail', args=[shop_id])
+
+
+def sample_address():
+    return Address.objects.create(
+        user=get_user_model().objects.create_user(
+            email='test@email.com',
+            password='bestpass'
+        ),
+        country="Romania",
+        postcode=574479,
+        region="Timis",
+        city="Timisoara",
+        street="Gheorghe Lazar",
+        number="24 A"
+    )
 
 
 class ShopTests(TestCase):
@@ -42,7 +57,8 @@ class ShopTests(TestCase):
 
     def test_create_shop_successful(self):
         """Test creating a Shop is successful"""
-        payload = {'name': 'ABC Corner'}
+        address = sample_address()
+        payload = {'name': 'ABC Corner', 'address': address.id}
         self.client.post(SHOP_URL, payload)
 
         exists = Shop.objects.filter(
@@ -61,6 +77,7 @@ class ShopTests(TestCase):
     def test_view_shop_detail(self):
         """Test viewing shop detail"""
         shop = Shop.objects.create(user=self.user, name='ABC Corner')
+        shop.address.add(sample_address().id)
 
         res = self.client.get(detail_url(shop.id))
         serializer = ShopSerializer(shop)
@@ -89,7 +106,8 @@ class ShopTests(TestCase):
 
         payload = {
             'name': 'ABC Corner',
-            'products': [product1.id, product2.id]
+            'products': [product1.id, product2.id],
+            'address': sample_address().id
         }
 
         res = self.client.post(SHOP_URL, payload)
