@@ -124,9 +124,10 @@
                     <table>
                         <tr>
                             <td>
-                                Sparksuite, Inc.<br>
-                                12345 Sunny Road<br>
-                                Sunnyville, CA 12345
+                                {{cart.shop}},<br>
+                                {{cart.shop.address.street}}, {{cart.shop.address.number}}<br>
+                                {{cart.shop.address.city}}, {{cart.shop.address.region}} {{cart.shop.address.postcode}}<br>
+                                {{cart.shop.address.country}}
                             </td>
 
                             <td style="text-align: right">
