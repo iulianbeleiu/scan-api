@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 
+from shop.models import Shop
+
 
 class CartItem(models.Model):
     user = models.ForeignKey(
@@ -31,6 +33,7 @@ class Cart(models.Model):
     )
     items = models.ManyToManyField(CartItem)
     total = models.FloatField()
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     completed = models.BooleanField(default=True)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
