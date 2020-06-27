@@ -19,22 +19,13 @@ class ShopProductsInline(admin.TabularInline):
     verbose_name_plural = "Products"
 
 
-class ShopAddressInline(admin.TabularInline):
-    model = Shop.address.through
-    extra = 0
-    max_num = 1
-    min_num = 1
-    verbose_name = "Address"
-    verbose_name_plural = "Address"
-
-
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'is_active', 'user')
+    list_display = ('id', 'name', 'is_active', 'user', 'address')
     search_fields = ('name', 'is_active', 'user')
     list_per_page = 10
-    inlines = [ShopProductsInline, ShopAddressInline]
-    exclude = ('products', 'address')
+    inlines = [ShopProductsInline]
+    exclude = ('products',)
 
 
 @admin.register(Address)

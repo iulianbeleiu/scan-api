@@ -8,6 +8,8 @@ from rest_framework.test import APIClient
 from cart.models import Cart
 from cart.serializers import CartSerializer
 
+from shop.models import Shop, Address
+
 
 CART_URL = reverse('cart:cart-list')
 CART_ITEMS_URL = reverse('cart:cartitem-list')
@@ -16,6 +18,21 @@ CART_ITEMS_URL = reverse('cart:cartitem-list')
 def receipt_pdf_url(cart_id):
     """Return url for receipt pdf"""
     return reverse('cart:cart-receipt', args=[cart_id])
+
+
+def sample_address():
+    return Address.objects.create(
+        user=get_user_model().objects.create_user(
+            email='test@email.com',
+            password='bestpass'
+        ),
+        country="Romania",
+        postcode=574479,
+        region="Timis",
+        city="Timisoara",
+        street="Gheorghe Lazar",
+        number="24 A"
+    )
 
 
 class PrivateCartTests(TestCase):
@@ -47,6 +64,11 @@ class PublicCartTests(TestCase):
         )
         self.client = APIClient()
         self.client.force_authenticate(self.user)
+        self.shop = Shop.objects.create(
+            user=self.user,
+            name='ABC Iulian',
+            address=sample_address(),
+        )
 
     def test_retrieve_cart(self):
         """Test retrieving cart"""
@@ -60,7 +82,8 @@ class PublicCartTests(TestCase):
 
         cart = Cart.objects.create(
             user=self.user,
-            total=25
+            total=25,
+            shop=self.shop,
         )
 
         cart.items.add(res_items.data['id'])
@@ -77,6 +100,7 @@ class PublicCartTests(TestCase):
         cart = Cart.objects.create(
             user=self.user,
             total=25,
+            shop=self.shop,
         )
         cart_item_payload = {
             'name': "Sample cart item test",
@@ -93,7 +117,8 @@ class PublicCartTests(TestCase):
         )
         Cart.objects.create(
             user=other_user,
-            total=15
+            total=15,
+            shop=self.shop,
         )
         cart.items.add(res_items.data['id'])
 
@@ -113,7 +138,8 @@ class PublicCartTests(TestCase):
         res_items = self.client.post(CART_ITEMS_URL, cart_item_payload)
         payload = {
             'total': 14,
-            'items': [res_items.data['id']]
+            'shop': self.shop.id,
+            'items': [res_items.data['id']],
         }
 
         self.client.post(CART_URL, payload)
@@ -145,6 +171,7 @@ class PublicCartTests(TestCase):
         res_items = self.client.post(CART_ITEMS_URL, cart_item_payload)
         payload = {
             'total': 14,
+            'shop': self.shop.id,
             'items': [res_items.data['id']]
         }
         res = self.client.post(CART_URL, payload)

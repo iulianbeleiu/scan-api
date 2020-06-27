@@ -3,6 +3,23 @@ from django.contrib.auth import get_user_model
 
 from cart.models import CartItem, Cart
 
+from shop.models import Address, Shop
+
+
+def sample_address():
+    return Address.objects.create(
+        user=get_user_model().objects.create_user(
+            email='test@email.com',
+            password='bestpass'
+        ),
+        country="Romania",
+        postcode=574479,
+        region="Timis",
+        city="Timisoara",
+        street="Gheorghe Lazar",
+        number="24 A"
+    )
+
 
 class ModelTests(TestCase):
     def setUp(self):
@@ -11,6 +28,11 @@ class ModelTests(TestCase):
         self.user = get_user_model().objects.create_user(
             email=email,
             password=password
+        )
+        self.shop = Shop.objects.create(
+            user=self.user,
+            name='ABC Iulian',
+            address=sample_address()
         )
 
     def test_create_cart_item(self):
@@ -54,7 +76,8 @@ class ModelTests(TestCase):
 
         cart = Cart.objects.create(
             user=self.user,
-            total=items_total
+            total=items_total,
+            shop=self.shop,
         )
         cart.items.add(cart_item1)
         cart.items.add(cart_item2)

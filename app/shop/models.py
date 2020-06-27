@@ -24,7 +24,10 @@ class Shop(models.Model):
         on_delete=models.CASCADE
     )
     products = models.ManyToManyField('Product')
-    address = models.ManyToManyField('Address')
+    address = models.ForeignKey(
+        'Address',
+        on_delete=models.PROTECT
+    )
 
     def __str__(self):
         return self.name

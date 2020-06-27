@@ -12,11 +12,6 @@ class ShopSerializer(serializers.ModelSerializer):
         queryset=Product.objects.all()
     )
 
-    address = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Address.objects.all()
-    )
-
     class Meta:
         model = Shop
         fields = ('id', 'user', 'name', 'is_active', 'products', 'address')

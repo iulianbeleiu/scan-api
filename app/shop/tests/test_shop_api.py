@@ -54,11 +54,29 @@ class ShopTests(TestCase):
 
     def test_retrieve_shops(self):
         """Test retrieving shops"""
-        Shop.objects.create(user=self.user, name='ABC Iulian')
-        Shop.objects.create(user=self.user, name='Market X')
+        Shop.objects.create(
+            user=self.user,
+            name='ABC Iulian',
+            address=sample_address()
+        )
+        Shop.objects.create(
+            user=self.user,
+            name='Market X',
+            address=Address.objects.create(
+                user=self.user,
+                country="Romania",
+                postcode=574479,
+                region="Timis",
+                city="Timisoara",
+                street="Gheorghe Lazar",
+                number="24 A"
+            ),
+            is_active=True,
+        )
 
         res = self.client.get(SHOP_URL)
-        serializer = ShopSerializer(res.data, many=True)
+        shops = Shop.objects.all()
+        serializer = ShopSerializer(shops, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
@@ -84,8 +102,11 @@ class ShopTests(TestCase):
 
     def test_view_shop_detail(self):
         """Test viewing shop detail"""
-        shop = Shop.objects.create(user=self.user, name='ABC Corner')
-        shop.address.add(sample_address().id)
+        shop = Shop.objects.create(
+            user=self.user,
+            name='ABC Corner',
+            address=sample_address()
+        )
 
         res = self.client.get(detail_url(shop.id))
         serializer = ShopSerializer(shop)
