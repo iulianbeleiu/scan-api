@@ -32,10 +32,10 @@ class ModelTests(TestCase):
 
         shop = Shop.objects.create(
             user=sample_user(),
+            address=address,
             name='ABC Iulian',
             is_active=True,
         )
-        shop.address.add(address)
 
         self.assertEqual(str(shop), shop.name)
 

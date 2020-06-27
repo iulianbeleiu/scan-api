@@ -66,9 +66,9 @@ class PublicCartTests(TestCase):
         self.client.force_authenticate(self.user)
         self.shop = Shop.objects.create(
             user=self.user,
-            name='ABC Iulian'
+            name='ABC Iulian',
+            address=sample_address(),
         )
-        self.shop.address.add(sample_address())
 
     def test_retrieve_cart(self):
         """Test retrieving cart"""

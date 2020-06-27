@@ -31,9 +31,9 @@ class ModelTests(TestCase):
         )
         self.shop = Shop.objects.create(
             user=self.user,
-            name='ABC Iulian'
+            name='ABC Iulian',
+            address=sample_address()
         )
-        self.shop.address.add(sample_address())
 
     def test_create_cart_item(self):
         """Test the cart item string representation"""
