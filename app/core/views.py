@@ -14,7 +14,7 @@ def api_root(request, format=None):
         'user-token': reverse('user:token',
                               request=request, format=format),
         'anyline': reverse('anyline:anyline-list',
-                              request=request, format=format),
+                           request=request, format=format),
         'user-me': reverse('user:me',
                            request=request, format=format),
         'shops': reverse('shop:shop-list',
