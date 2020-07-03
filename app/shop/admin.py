@@ -7,6 +7,7 @@ from .models import Shop, Product, Address
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'description', 'quantity',
                     'price', 'barcode', 'image', 'is_active')
+    list_editable = ('barcode',)
     search_fields = ('name', 'description', 'quantity',
                      'price', 'barcode', 'image', 'is_active')
     list_per_page = 10
